@@ -30,7 +30,7 @@ Frontend und Backend sind klar getrennt und kommunizieren über HTTP (REST, RMM 
 
 ## Voraussetzungen
 
-Bitte stelle sicher, dass folgende Software installiert ist:
+>Bitte stelle sicher, dass folgende Software installiert ist:
 
 - **Java JDK 21 (LTS)**
 - **Docker Desktop** (inkl. Docker Compose)
@@ -67,11 +67,11 @@ npm run dev
 
 ### Wichtig bei Fehler oder ähnlichem
 
-1. Hinweis bei Problemen im Browser
- - Falls das Frontend im normalen Browserfenster nicht korrekt lädt: Inkognito-/Privat-Tab verwenden
+- Hinweis bei Problemen im Browser
+  1. Falls das Frontend im normalen Browserfenster nicht korrekt lädt: Inkognito-/Privat-Tab verwenden
  
-2. Alternativ im Browser:
- - DevTools öffnen (F12)
- - Tab Network
- - Option Disable cache aktivieren
- - Seite neu laden
+- Alternativ im Browser:
+  1. DevTools öffnen (F12)
+  2. Tab Network
+  3. Option Disable cache aktivieren
+  4. Seite neu laden
