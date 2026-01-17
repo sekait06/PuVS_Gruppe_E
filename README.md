@@ -1,6 +1,6 @@
 Parallele und Verteilte Systeme
 
-Gruppe E (fakait01, sekait06, mascit43)
+Gruppe E (fakait01, sekait06, mascit43) - Frontend Preact JS 
 
 # Todo Fullstack Application (PuVS)
 
