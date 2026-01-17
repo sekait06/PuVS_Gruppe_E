@@ -1,43 +1,68 @@
-import { useState } from 'preact/hooks'
-import preactLogo from './assets/preact.svg'
-import viteLogo from '/vite.svg'
-import './app.css'
+import { useMemo, useState } from "preact/hooks";
+import "./styles/ui.css";
+import { useTodos } from "./hooks/useTodos";
+
+import { Header } from "./components/Header";
+import { ErrorBanner } from "./components/ErrorBanner";
+import { TodoForm } from "./components/TodoForm";
+import { FilterBar } from "./components/FilterBar";
+import { TodoList } from "./components/TodoList";
+import { LoadingState } from "./components/LoadingState";
 
 export function App() {
-  const [count, setCount] = useState(0)
+  const { todos, loading, err, add, toggle, save, remove, setErr } = useTodos();
+
+  const [filter, setFilter] = useState("all"); // all | open | done
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState("new"); // new | old | title
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+
+    let list = todos.slice();
+
+    if (q) {
+      list = list.filter((t) => {
+        const a = (t.title ?? "").toLowerCase();
+        const b = (t.description ?? "").toLowerCase();
+        return a.includes(q) || b.includes(q);
+      });
+    }
+
+    if (filter === "open") list = list.filter((t) => !t.completed);
+    if (filter === "done") list = list.filter((t) => !!t.completed);
+
+    if (sort === "new") list.sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
+    if (sort === "old") list.sort((a, b) => (a.id ?? 0) - (b.id ?? 0));
+    if (sort === "title") list.sort((a, b) => String(a.title ?? "").localeCompare(String(b.title ?? "")));
+
+    return list;
+  }, [todos, filter, query, sort]);
+
+  const countOpen = useMemo(() => todos.filter((t) => !t.completed).length, [todos]);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} class="logo" alt="Vite logo" />
-        </a>
-        <a href="https://preactjs.com" target="_blank">
-          <img src={preactLogo} class="logo preact" alt="Preact logo" />
-        </a>
-      </div>
-      <h1>Vite + Preact</h1>
-      <div class="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/app.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p>
-        Check out{' '}
-        <a
-          href="https://preactjs.com/guide/v10/getting-started#create-a-vite-powered-preact-app"
-          target="_blank"
-        >
-          create-preact
-        </a>
-        , the official Preact + Vite starter
-      </p>
-      <p class="read-the-docs">
-        Click on the Vite and Preact logos to learn more
-      </p>
-    </>
-  )
+    <main class="container">
+      <Header countOpen={countOpen} countTotal={todos.length} />
+
+      <ErrorBanner message={err} onClear={() => setErr("")} />
+
+      <TodoForm onAdd={add} />
+
+      <FilterBar
+        filter={filter}
+        setFilter={setFilter}
+        query={query}
+        setQuery={setQuery}
+        sort={sort}
+        setSort={setSort}
+      />
+
+      {loading ? (
+        <LoadingState />
+      ) : (
+        <TodoList todos={filtered} onToggle={toggle} onDelete={remove} onSave={save} />
+      )}
+    </main>
+  );
 }
