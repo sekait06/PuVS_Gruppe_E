@@ -44,19 +44,60 @@ Frontend und Backend sind klar getrennt und kommunizieren über HTTP (REST, RMM 
 ### 1. Docker starten
 Docker Desktop muss **vor allen anderen Schritten** gestartet sein.
 
-Überprüfen:
+
+
+### Falls Docker Desktop installiert werden muss:
+-> https://www.docker.com/products/docker-desktop/
+- Installer starten
+  1. WSL 2 Integration aktiviert lassen (sehr wichtig)
+  2. Falls gefragt: Use WSL 2 instead of Hyper-V -> Ja
+  3. Docker installiert evtl. automatisch WSL
+  4. Rechner neu starten, wenn Docker das verlangt
+ 
+### Überprüfen:
 ```bash
 docker --version
 ```
+### Ergebnis:
+```text
+Docker version 26.x.x, build ...
+```
+und
+### Überprüfen:
+```bash
+docker compose version
+```
+
+### Ergebnis: 
+```text
+Docker Compose version v2.x.x
+```
+---
 ### 2. PostgreSQL starten
 ```bash
 docker compose up -d
 ```
+PostgreSQL Container starten (Test)
+```bash
+docker run -d --name postgres-puvs `
+  -e POSTGRES_PASSWORD=mysecretpassword `
+  -p 5432:5432 `
+  postgres:16
+```
+- Danach überprüfen:
+```bash
+docker ps
+```
+- Man sollte postgres in der Liste sehen
+
+---
 ### 3. Backend starten
 ```powershell
 .\mvnw.cmd spring-boot:run
 ```
 - läuft auf http://localhost:8080
+
+---
 
 ### 4. Frontend starten (Preact)
 ```bash
@@ -65,10 +106,12 @@ npm run dev
 ```
 - läuft auf http://localhost:5173
 
+---
+
 ### Wichtig bei Fehler oder ähnlichem
 
 - Hinweis bei Problemen im Browser
-  1. Falls das Frontend im normalen Browserfenster nicht korrekt lädt: Inkognito-/Privat-Tab verwenden
+  1. Falls das Frontend im normalen Browserfenster nicht korrekt lädt: **Inkognito-/Privat-Tab verwenden**
  
 - Alternativ im Browser:
   1. DevTools öffnen (F12)
