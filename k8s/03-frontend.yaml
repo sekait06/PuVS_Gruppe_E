@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: todo-app
+data:
+  default.conf: |
+    server {
+      listen 80;
+
+      location / {
+        root /usr/share/nginx/html;
+        try_files $uri /index.html;
+      }
+
+      location /todos {
+        proxy_pass http://backend:8080/todos;
+      }
+    }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: todo-app
+spec:
+  selector:
+    app: frontend
+  ports:
+    - port: 80
+      targetPort: 80
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: todo-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: todo-frontend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: nginx-config-vol
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+      volumes:
+        - name: nginx-config-vol
+          configMap:
+            name: nginx-config
